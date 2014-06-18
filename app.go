@@ -24,6 +24,7 @@ func main() {
 				cli.StringFlag{"logdir", "/var/log/apache2/access_log", "log file (absolute path)"},
 				cli.StringFlag{"server", "", "Kafka server location with port `localhost:9092`"},
 				cli.StringFlag{"topic", "apache", "Kafka queue topic"},
+				cli.StringFlag{"client", "client_id", "Client ID for Kafka"},
 			},
 			Action: func(c *cli.Context) {
 				run(c)
@@ -34,7 +35,8 @@ func main() {
 }
 
 func run(c *cli.Context) {
-	client, err := s.NewClient("client_id", []string{c.String("server")}, s.NewClientConfig())
+	client, err := s.NewClient(c.String("client"), []string{c.String("server")}, s.NewClientConfig())
+	debug := c.Bool("debug")
 	if err != nil {
 		panic(err)
 	} else {
@@ -49,8 +51,10 @@ func run(c *cli.Context) {
 	defer producer.Close()
 	t, err := tail.TailFile(c.String("logdir"), tail.Config{Follow: true})
 	for line := range t.Lines {
-		fmt.Println(line.Text)
-		go sendLineToKafka(line.Text, producer, c.String("topic"), c.Bool("debug"))
+		if (debug) {
+			fmt.Println(line.Text)
+		}
+		go sendLineToKafka(line.Text, producer, c.String("topic"), debug)
 	}
 	if (err != nil) {
 		panic(err)
