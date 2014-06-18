@@ -5,7 +5,7 @@ import (
 	"github.com/ActiveState/tail"
 	"github.com/codegangsta/cli"
 	"os"
-	"github.com/Shopify/sarama"
+	s "github.com/Shopify/sarama"
 )
 
 func main() {
@@ -34,7 +34,7 @@ func main() {
 }
 
 func run(c *cli.Context) {
-	client, err := sarama.NewClient("client_id", []string{c.String("server")}, sarama.NewClientConfig())
+	client, err := s.NewClient("client_id", []string{c.String("server")}, s.NewClientConfig())
 	if err != nil {
 		panic(err)
 	} else {
@@ -42,7 +42,7 @@ func run(c *cli.Context) {
 	}
 	defer client.Close()
 
-	producer, err := sarama.NewProducer(client, nil)
+	producer, err := s.NewProducer(client, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -57,8 +57,8 @@ func run(c *cli.Context) {
 	}
 }
 
-func sendLineToKafka(line string, producer *sarama.Producer, topic string, debug bool) {
-	err := producer.SendMessage(topic, nil, sarama.StringEncoder(line))
+func sendLineToKafka(line string, producer *s.Producer, topic string, debug bool) {
+	err := producer.SendMessage(topic, nil, s.StringEncoder(line))
 	if err != nil {
 		panic(err)
 	} else {
