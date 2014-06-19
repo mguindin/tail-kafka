@@ -1,6 +1,7 @@
 ==
 Tail-Kafka
 ==
+[![Build Status](https://travis-ci.org/mguindin/tail-kafka.svg?branch=master)](https://travis-ci.org/mguindin/tail-kafka)
 
 Program to tail a file and send each line to a Kafka topic.  Written in go.
 
