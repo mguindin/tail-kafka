@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/ActiveState/tail"
+	s "github.com/Shopify/sarama"
 	"github.com/codegangsta/cli"
 	"os"
-	s "github.com/Shopify/sarama"
 )
 
 func main() {
@@ -55,12 +55,12 @@ func run(c *cli.Context) {
 	defer producer.Close()
 	t, err := tail.TailFile(c.String("logdir"), tail.Config{Follow: true})
 	for line := range t.Lines {
-		if (debug) {
+		if debug {
 			fmt.Println(line.Text)
 		}
 		go sendLineToKafka(line.Text, producer, c.String("topic"), debug)
 	}
-	if (err != nil) {
+	if err != nil {
 		panic(err)
 	}
 }
