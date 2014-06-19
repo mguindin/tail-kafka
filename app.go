@@ -44,7 +44,11 @@ func run(c *cli.Context) {
 	}
 	defer client.Close()
 
-	producer, err := s.NewProducer(client, nil)
+	config := s.NewProducerConfig()
+	config.MaxBufferedBytes = 1024
+	config.MaxBufferTime = 5
+
+	producer, err := s.NewProducer(client, config)
 	if err != nil {
 		panic(err)
 	}
